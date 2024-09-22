@@ -14,27 +14,63 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const client_1 = require("@prisma/client");
-//http://hooks.zapier.com/hooks/catch/12345/76543/
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const client = new client_1.PrismaClient();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
+// Schema for request validation (optional, using Zod)
 app.post("/hooks/catch/:userId/:zapId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const userId = req.params.userId;
-    const zapId = req.params.zapId;
+    const { userId, zapId } = req.params;
     const body = req.body;
-    yield client.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
-        const run = yield client.zapRun.create({
-            data: {
-                zapId: zapId,
-                metadata: body
+    // Validate request params (you can add more specific validation rules if needed)
+    if (!userId || !zapId) {
+        return res.status(400).json({ message: "Missing userId or zapId" });
+    }
+    // Optionally validate request body using Zod schema (you can skip this if not needed)
+    try {
+        // Store in db using a transaction
+        let run;
+        let outBox;
+        const validZapId = yield client.zap.findFirst({
+            where: {
+                id: zapId,
             },
         });
-        yield client.zapRunOutBox.create({
-            data: {
-                zapRunId: run.id
-            }
+        if (validZapId) {
+            const result = yield client.$transaction((tx) => __awaiter(void 0, void 0, void 0, function* () {
+                run = yield tx.zapRun.create({
+                    data: {
+                        zapId: zapId,
+                        metadata: body,
+                    },
+                });
+                outBox = yield tx.zapRunOutBox.create({
+                    data: {
+                        zapRunId: run.id,
+                    },
+                });
+                return { run, outBox };
+            }));
+        }
+        else {
+            res.json({
+                message: "the zap trigger not found please check the id",
+            });
+        }
+        res.status(200).json({
+            message: "Webhook received",
+            zapRun: run,
+            zapRunOutBox: outBox,
         });
-    }));
-    res.json({ message: "doone bro sanka naku" });
+    }
+    catch (error) {
+        console.error("Error processing webhook:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 }));
-app.listen(3000, () => console.log("listening in port 3000"));
+// Use the port from the environment variable or default to 3002
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
