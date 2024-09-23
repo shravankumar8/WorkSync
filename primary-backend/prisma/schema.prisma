@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Action {
+  id              String          @id
+  zapId           String
+  actionId        String
+  metadata        Json            @default("{}")
+  sortingOrder    Int             @default(0)
+  AvailableAction AvailableAction @relation(fields: [actionId], references: [id])
+  Zap             Zap             @relation(fields: [zapId], references: [id])
+}
+
+model AvailableAction {
+  id     String   @id
+  name   String
+  image  String
+  Action Action[]
+}
+
+model AvailableTrigger {
+  id      String    @id
+  name    String
+  image   String
+  Trigger Trigger[]
+}
+
+model Trigger {
+  id               String           @id
+  zapId            String           @unique
+  triggerId        String
+  metadata         Json             @default("{}")
+  AvailableTrigger AvailableTrigger @relation(fields: [triggerId], references: [id])
+  Zap              Zap              @relation(fields: [zapId], references: [id])
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String
+  password String
+  Zap      Zap[]
+}
+
+model Zap {
+  id        String   @id
+  triggerId String
+  userId    Int
+  actions   Action[]
+  Trigger   Trigger?
+  User      User     @relation(fields: [userId], references: [id])
+  ZapRuns   ZapRun[]
+}
+
+model ZapRun {
+  id           String        @id
+  zapId        String
+  metadata     Json
+  Zap          Zap           @relation(fields: [zapId], references: [id])
+  ZapRunOutbox ZapRunOutbox?
+}
+
+model ZapRunOutbox {
+  id       String @id
+  zapRunId String @unique
+  ZapRun   ZapRun @relation(fields: [zapRunId], references: [id])
+}
