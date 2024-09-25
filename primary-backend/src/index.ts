@@ -14,4 +14,7 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/zap", zapRouter);
 // app.use("/api/v1/zap",userzap)
 // app.use("/api/v1/signup",userSignup)
-app.listen(3000);
+app.listen(3000,()=>{
+    console.log("\x1b[32m%s\x1b[0m", "Server is running on port 3000");
+
+});

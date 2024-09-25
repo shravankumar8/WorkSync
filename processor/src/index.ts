@@ -27,7 +27,7 @@ async function connectKafkaProducer() {
 
 async function processOutBox() {
   try {
-    const pendingRows = await client.zapRunOutBox.findMany({
+    const pendingRows = await client.zapRunOutbox.findMany({
       where: {},
       take: 10,
     });
@@ -46,7 +46,7 @@ async function processOutBox() {
           });
 
           // If successful, delete processed rows
-          await transactionClient.zapRunOutBox.deleteMany({
+          await transactionClient.zapRunOutbox.deleteMany({
             where: {
               id: {
                 in: pendingRows.map((e) => e.id),

@@ -41,7 +41,7 @@ app.post("/hooks/catch/:userId/:zapId", async (req: Request, res: Response) => {
           },
         });
 
-        outBox = await tx.zapRunOutBox.create({
+        outBox = await tx.zapRunOutbox.create({
           data: {
             zapRunId: run.id,
           },
