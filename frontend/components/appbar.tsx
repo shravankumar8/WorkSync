@@ -1,45 +1,45 @@
-    import numpy as np
-    from flask import Flask, request,render_template
-    from flask_cors import CORS
-    import os
-    from sklearn.externals import joblib
-    import pickle
-    import flask
-    import os
-    import newspaper
-    from newspaper import Article
-    import urllib
-    import nltk
-    nltk.download('punkt')
-
-    #Loading Flask and assigning the model variable
-    app = Flask(__name__)
-    CORS(app)
-    app=flask.Flask(__name__,template_folder='templates')
-
-    with open('model.pkl','rb') as handle:
-	    model = pickle.load(handle)
-
-    @app.route('/')
-    def main():
-	    return render_template('index.html')
-
-    #Receiving the input url from the user and using Web Scrapping to extract the news content
-    @app.route('/predict' ,methods=['GET' , 'POST'])
-    def predict():
-	    url =request.get_data(as_text=True)[5:]
-	    url = urllib.parse.unquote(url)
-	    article = Article(str(url))
-	    article.download()
-	    article.parse()
-	    article.nlp()
-	    news = article.summary
-	    #Passing the news article to the model and returing whether it is Fake or Real
-	    pred = model.jpredict([news])
-	    return render_template('index.html', prediction_text= 'The news is "{}"'.format(pred[0]))
-
-    if__name__=="__main__":
-	    port=int(os.environ.get('PORT',5000))
-	    app.run(port=port,debug=True,use-reloader=False)
-
-
+import Link from "next/link";
+export default function AppBar() {
+  return (
+    <div className="flex justify-between align-middle border-b-2 pb-2  ">
+      <div className="flex gap-10">
+        <div className="logoText flex align-bottom ">
+          <div className="p-1 max-h-0  bg-orange-500"></div>
+          <div className="text-2xl font-extrabold">
+            <Link href="/zapier">Zapier</Link>
+          </div>
+        </div>
+        <div>
+          {" "}
+          <Link href="/products">Products</Link>
+        </div>
+        <div>
+          {" "}
+          <Link href="/solutions">Solutions</Link>
+        </div>
+        <div>
+          {" "}
+          <Link href="/resources">Resources</Link>
+        </div>
+        <div>
+          {" "}
+          <Link href="/enterprise">Enterprise</Link>
+        </div>
+        <div>
+          {" "}
+          <Link href="/pricing">Pricing</Link>
+        </div>
+      </div>
+      <div className="flex items-center gap-6">
+        <div><Link href="/explore-apps">Explore apps</Link></div>
+        <div><Link href="/Sales">Contact Sales</Link></div>
+        <div><Link href="/>login">login</Link></div>
+        <div className="flex p-4 text-white rounded-lg bg-orange-500 h-3 justify-center align-middle items-center text-center">
+          <div>
+            <Link href="/signup">Signup</Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
