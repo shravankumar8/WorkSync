@@ -5,8 +5,16 @@ import { zapRouter } from "./routes/zapRoutes/zapRoute";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser"; // Import cookie parser
 dotenv.config();
+const PORT=process.env.PORT || 3001
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:3000", // or the specific frontend URL
+  credentials: true, // if you are dealing with cookies or sessions
+  optionsSuccessStatus: 200, // legacy browser support
+};
+
+app.use(cors(corsOptions));
+
 app.use(cookieParser());
 app.use(express.json());
 
@@ -14,7 +22,6 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/zap", zapRouter);
 // app.use("/api/v1/zap",userzap)
 // app.use("/api/v1/signup",userSignup)
-app.listen(3000,()=>{
-    console.log("\x1b[32m%s\x1b[0m", "Server is running on port 3000");
-
+app.listen(PORT, () => {
+  console.log("\x1b[32m%s\x1b[0m", "Server is running on port 3001");
 });

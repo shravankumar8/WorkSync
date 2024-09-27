@@ -1,7 +1,7 @@
 import Link from "next/link";
 export default function AppBar() {
   return (
-    <div className="flex justify-between align-middle border-b-2 pb-2  ">
+    <header className="flex justify-between align-middle border-b-2 pb-2  ">
       <div className="flex gap-10">
         <div className="logoText flex align-bottom ">
           <div className="p-1 max-h-0  bg-orange-500"></div>
@@ -40,6 +40,6 @@ export default function AppBar() {
           </div>
         </div>
       </div>
-    </div>
+    </header>
   );
 }

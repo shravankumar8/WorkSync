@@ -5,6 +5,7 @@ import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt"; // For password hashing
+import { parse } from "qs";
 
 dotenv.config();
 const router = Router();
@@ -61,9 +62,10 @@ res.cookie("token", token, {
 
 router.post("/signup", async (req, res) => {
   try {
-    const parsedData = await signupSchema.safeParse(req.body);
+    console.log(req.body)
+    const parsedData =  signupSchema.safeParse(req.body);
     if (!parsedData.success) {
-      return res.status(400).json({ message: "Invalid inputs" });
+      return res.status(400).json({error:parsedData.error, message: "Invalid inputs" });
     }
 
     const { email, password, name } = parsedData.data;
