@@ -8,9 +8,14 @@ export default function Hero() {
   return (
     <div className=" justify-between grid grid-cols-2 align-middle m-16 pb-2  ">
       <div className="flex flex-col gap-5   ">
-        <div className="flex  font-semibold px-2 py-2 max-w-52 bg-gray-200 rounded-xl items-center">
+        <div
+          onClick={() => {
+            router.push("/tour");
+          }}
+          className="flex  cursor-pointer  gap-2 font-semibold px-2 py-2 max-w-52 bg-gray-200 rounded-xl items-center"
+        >
           <div className="border-[1px] border-black px-2 py-1 flex  rounded-xl">
-            New{" "}
+            New
           </div>
           <div>Take a tour -&gt;</div>
         </div>
@@ -25,24 +30,30 @@ export default function Hero() {
         <div className="flex gap-4">
           <div
             onClick={() => {
-              router.push("/googleoauth");
+              router.push("/signup");
             }}
             className="flex p-6 text-white cursor-pointer rounded-3xl bg-orange-700 h-3 justify-center align-middle items-center text-center"
           >
             Start with a free Email
           </div>
-          <div className="flex p-6  border-[1px] border-black  rounded-3xl  h-3 justify-center align-middle items-center text-center">
-            <div>
-              <Link href="/googleoauth">Start with google</Link>
-            </div>
+          <div
+            onClick={() => {
+              router.push("/googleoauth");
+            }}
+            className="flex p-6 cursor-pointer border-[1px] border-black  rounded-3xl  h-3 justify-center align-middle items-center text-center"
+          >
+            Start with google
           </div>
         </div>
       </div>
       <div>
         <div>
-          <img
+          <Image
             src="https://res.cloudinary.com/zapier-media/image/upload/q_auto/f_auto/v1726210651/Homepage%20%E2%80%94%20Sept%202024/homepage-hero_vvpkmi.png"
-            alt=""
+            alt="Hero Image"
+            width={800}
+            height={500}
+            priority
           />
         </div>
       </div>
