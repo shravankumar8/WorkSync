@@ -33,7 +33,7 @@ export default function AppBar() {
       <div className="flex items-center gap-6">
         <div><Link href="/explore-apps">Explore apps</Link></div>
         <div><Link href="/Sales">Contact Sales</Link></div>
-        <div><Link href="/>login">login</Link></div>
+        <div><Link href="/login">login</Link></div>
         <div className="flex p-4 text-white rounded-lg bg-orange-500 h-3 justify-center align-middle items-center text-center">
           <div>
             <Link href="/signup">Signup</Link>

@@ -11,6 +11,7 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        customPurple: "rgb(43, 35, 88)",
       },
     },
   },

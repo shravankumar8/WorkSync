@@ -13,6 +13,7 @@ export const prismaClient = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "provenworks";
 
 router.post("/signin", async (req, res) => {
+  console.log(req.body)
   try {
     const parsedData = await signinSchema.safeParse(req.body);
     if (!parsedData.success) {

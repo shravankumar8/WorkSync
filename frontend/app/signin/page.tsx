@@ -3,25 +3,25 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function Signup() {
+export default function Signin() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    name: "",
+   
   });
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const body = {
       email: formData.email,
-      name: formData.name,
+     
       password: formData.password,
     };
     try {
       // Send a POST request to your backend
-      const response = await fetch("http://localhost:3001/api/v1/user/signup", {
+      const response = await fetch("http://localhost:3001/api/v1/user/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,16 +31,15 @@ export default function Signup() {
 
       // Handle response
       const result = await response.json();
-      console.log(result.user.token);
-
+      console.log(result);
       if (response.ok) {
-         localStorage.setItem("token", JSON.stringify(result.user.token));
         // Success - display success message
         setSuccess("Signup successful!");
         alert("Signup successful!");
+        localStorage.setItem("token", JSON.stringify(result.user.token));
 
         setError(""); // Clear any previous error messages
-        router.push("/dashboard");
+        router.push("/dashboard")
       } else {
         if (result.error) {
           const messages = result.error.issues.map(
@@ -86,7 +85,7 @@ export default function Signup() {
       <div className="flex flex-col  border-2 gap-5  p-4 max-w-md">
         <div className="flex align-bottom bg-blue-600 rounded-xl text-white items-center p-2 justify-evenly">
           <div className="text-2xl">𝕏</div>
-          <div>Signup with google</div>
+          <div>signin with google</div>
         </div>
         <div className="self-center">OR</div>
         <div>
@@ -103,17 +102,7 @@ export default function Signup() {
               />
             </div>
             <div className="flex gap-3">
-              <div className="flex gap-2 min-w-3 flex-col">
-                <label htmlFor=""> name (required)</label>
-                <input
-                  className="border-[1px] text-black border-gray-700 p-3 rounded-lg"
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
+              
               <div className="flex gap-2 min-w-3  flex-col">
                 <label htmlFor="">password (required)</label>
                 <input
