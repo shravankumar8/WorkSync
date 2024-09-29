@@ -1,11 +1,34 @@
-import React from 'react'
+import React from "react";
 
-const Dashboard = () => {
-  return (
-    <div>
-      dewd
-    </div>
-  )
+interface Zap {
+  id: string;
+  triggerId: string;
+  userId: number;
+  actions: {
+    id: string;
+    zapId: string;
+    actionId: string;
+    sortingOrder: number;
+    type: {
+      id: string;
+      name: string;
+      image: string;
+    };
+  }[];
+  trigger: {
+    id: string;
+    zapId: string;
+    triggerId: string;
+    type: {
+      id: string;
+      name: string;
+      image: string;
+    };
+  };
 }
 
-export default Dashboard
+const Dashboard = () => {
+  return <div>dewd</div>;
+};
+
+export default Dashboard;
