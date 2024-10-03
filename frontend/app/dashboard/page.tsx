@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import React, { useEffect, useState } from "react";
 import { BACKEND_URL, HOOKS_URL } from "../config";
 import axios from "axios";
