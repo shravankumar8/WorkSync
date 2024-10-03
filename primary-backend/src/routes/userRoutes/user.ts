@@ -5,8 +5,6 @@ import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt"; // For password hashing
-import { parse } from "qs";
-
 dotenv.config();
 const router = Router();
 export const prismaClient = new PrismaClient();
@@ -42,7 +40,7 @@ router.post("/signin", async (req, res) => {
     const token = jwt.sign(
       { type: "user", id: existingUser.id, email: existingUser.email },
       JWT_SECRET,
-      { expiresIn: "24h" }
+      
     );
 res.cookie("token", token, {
   httpOnly: true, // Makes sure the cookie is not accessible via JavaScript
@@ -91,7 +89,7 @@ router.post("/signup", async (req, res) => {
     const token = jwt.sign(
       { type: "user", id: newUser.id, email: newUser.email },
       JWT_SECRET,
-      { expiresIn: "24h" }
+     
     );
 
     res.status(200).json({

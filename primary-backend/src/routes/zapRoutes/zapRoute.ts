@@ -6,7 +6,7 @@ import { prismaClient } from "../userRoutes/user";
 const router = Router();
 
 router.post("/", authMiddleware, async (req, res) => {
-  console.log("create a zap");
+  console.log("creating a zap");
   // @ts-ignore
   const id: string = req.id;
   const { success, data } = ZapCreateSchema.safeParse(req.body);
@@ -97,7 +97,7 @@ router.get("/:zapId", authMiddleware, async (req, res) => {
     const zap = await prismaClient.zap.findFirst({
       where: {
         id: zapId,
-        userId:1,
+        userId:id,
       },
       include: {
         actions: {

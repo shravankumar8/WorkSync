@@ -36,7 +36,7 @@ export default function Signin() {
         // Success - display success message
         setSuccess("Signup successful!");
         alert("Signup successful!");
-        localStorage.setItem("token", JSON.stringify(result.user.token));
+       localStorage.setItem("token", result.user.token);
 
         setError(""); // Clear any previous error messages
         router.push("/dashboard")
@@ -54,6 +54,7 @@ export default function Signin() {
         setError(result.message || "Signup failed. Please try again.");
       }
     } catch (err) {
+      alert("An error occurred. Please try again.");
       // Network or other error
       setError("An error occurred. Please try again.");
     }
