@@ -4,35 +4,31 @@ import { ZapCell } from "@/components/zapcell";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-interface Action {
-  id: string;
-  name: string;
-  image: string;
-}
-
-interface ActionState {
-  availableAction: Action[]; // Corrected the name to match backend response
-}
-
-interface TriggerState {
-  availableTriggers: Action[]; // Added correct naming for triggers
-}
 function useAvailableActionsAndTriggers() {
   const [availableActionIds, setAvailableActionIds] = useState<
-    ActionState | undefined
-  >();
+    {
+      id: string;
+      name: string;
+      image: string;
+    }[]
+  >([]); // Default to an empty array
+
   const [availableTriggerIds, setAvailableTriggerIds] = useState<
-    TriggerState | undefined
-  >();
+    {
+      id: string;
+      name: string;
+      image: string;
+    }[]
+  >([]); // Default to an empty array
 
   useEffect(() => {
     // fetching triggers
     axios
       .get(`${BACKEND_URL}/api/v1/trigger/available`)
-      .then((res) => setAvailableTriggerIds(res.data));
+      .then((res) => setAvailableTriggerIds(res.data.availableTriggers));
     axios
       .get(`${BACKEND_URL}/api/v1/action/available`)
-      .then((res) => setAvailableActionIds(res.data));
+      .then((res) => setAvailableActionIds(res.data.availableAction));
   }, []);
 
   return { availableActionIds, availableTriggerIds };
@@ -83,7 +79,7 @@ export default function MyComponent() {
               {
                 index: a.length + 1,
                 availableActionId: "",
-                availableActionName: "game",
+                availableActionName: "",
               },
             ]);
           }}
@@ -95,7 +91,7 @@ export default function MyComponent() {
       {selectedModelIndex && (
         <Modal
           availableItems={
-            selectedModelIndex === 1 ? availableTriggerIds : availableTriggerIds
+            selectedModelIndex === 1 ? availableTriggerIds : availableActionIds
           }
           index={selectedModelIndex}
           onSelect={(props: null | { name: string; id: string }) => {
@@ -105,6 +101,7 @@ export default function MyComponent() {
             }
 
             if (selectedModelIndex === 1) {
+              
               setSelectedTrigger({
                 name: props.name,
                 id: props.id,
@@ -131,7 +128,11 @@ function Modal({
   index,
   onSelect,
 }: {
-  availableItems: TriggerState | ActionState | undefined; // Adjusted type
+  availableItems: {
+    id: string;
+    name: string;
+    image: string;
+  }[];
   index: number;
   onSelect: (props: null | { name: string; id: string }) => void;
 }) {
@@ -172,6 +173,31 @@ function Modal({
               </svg>
               <span className="sr-only">Close modal</span>
             </button>
+          </div>
+          <div className="p-4 md:p-5 space-y-4">
+            {availableItems.map((item) => {
+              return (
+                <div onClick={()=>{
+                  onSelect({
+                    id: item.id,
+                    name: item.name,
+                  })
+                }} className="flex hover:bg-slate-100 align-middle border rounded-lg cursor-pointer  items-center  ">
+                  <div className="m-2 " key={item.id}>
+                    {" "}
+                    {/* Always include a key prop when rendering lists */}
+                    <img width={30} src={item.image} alt="" />
+                  </div>
+
+                  <div className="m-2" key={item.id}>
+                    {" "}
+                    {/* Always include a key prop when rendering lists */}
+                    {item.name}
+                  </div>
+                </div>
+                // Add return statement here
+              );
+            })}
           </div>
         </div>
       </div>
