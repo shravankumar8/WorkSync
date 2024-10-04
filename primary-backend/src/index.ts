@@ -4,6 +4,8 @@ import { userRouter } from "./routes/userRoutes/user";
 import { zapRouter } from "./routes/zapRoutes/zapRoute";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser"; // Import cookie parser
+import { triggerRouter } from "./routes/triggerRoutes/triggerRouter";
+import { actionRouter } from "./routes/actionRoutes/actionRouter";
 dotenv.config();
 const PORT=process.env.PORT || 3001
 const app = express();
@@ -20,6 +22,8 @@ app.use(express.json());
 
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/zap", zapRouter);
+app.use("/api/v1/trigger", triggerRouter);
+app.use("/api/v1/action", actionRouter);
 // app.use("/api/v1/zap",userzap)
 // app.use("/api/v1/signup",userSignup)
 app.listen(PORT, () => {

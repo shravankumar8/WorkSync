@@ -1,23 +1,62 @@
 "use client";
+import { BACKEND_URL } from "@/app/config";
 import { ZapCell } from "@/components/zapcell";
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
-export default function () {
-  const [selectedTrigger, setSelectedTrigger] = useState("");
+interface Action {
+  id: string;
+  name: string;
+  image: string;
+}
+
+interface ActionState {
+  availableAction: Action[]; // Corrected the name to match backend response
+}
+
+interface TriggerState {
+  availableTriggers: Action[]; // Added correct naming for triggers
+}
+function useAvailableActionsAndTriggers() {
+  const [availableActionIds, setAvailableActionIds] = useState<
+    ActionState | undefined
+  >();
+  const [availableTriggerIds, setAvailableTriggerIds] = useState<
+    TriggerState | undefined
+  >();
+
+  useEffect(() => {
+    // fetching triggers
+    axios
+      .get(`${BACKEND_URL}/api/v1/trigger/available`)
+      .then((res) => setAvailableTriggerIds(res.data));
+    axios
+      .get(`${BACKEND_URL}/api/v1/action/available`)
+      .then((res) => setAvailableActionIds(res.data));
+  }, []);
+
+  return { availableActionIds, availableTriggerIds };
+}
+
+export default function MyComponent() {
+  const { availableActionIds, availableTriggerIds } =
+    useAvailableActionsAndTriggers();
+  const [selectedModelIndex, setSelectedModelIndex] = useState<null | number>();
+  const [selectedTrigger, setSelectedTrigger] = useState<{
+    name: string;
+    id: string;
+  }>();
   const [selectedActions, setSelectedActions] = useState<
-    {
-      availableActionId: string;
-      availableActionName: string;
-    }[]
+    { index: number; availableActionId: string; availableActionName: string }[]
   >([]);
   return (
     <div className="w-full  flex flex-col mx-auto  justify-center  h-screen  bg-slate-200">
       <div className="justify-center mb-3 flex">
         <ZapCell
           onClick={() => {
-            console.log("helo");
+            setSelectedModelIndex(1);
           }}
-          name={selectedTrigger ? selectedTrigger : "Trigger"}
+          name={selectedTrigger?.name ? selectedTrigger.name : "Trigger"}
           index={1}
         />
       </div>
@@ -25,32 +64,117 @@ export default function () {
         {selectedActions.map((x, index) => {
           return (
             <ZapCell
-            
               key={index}
               onClick={() => {
-                console.log("helo");
+                setSelectedModelIndex(x.index + 1);
               }}
               name={x ? x.availableActionName : "action"}
-              index={index + 1}
+              index={x.index + 1}
             />
           );
         })}
       </div>
-      <button
-        className="text-4xl  font-semibold"
-        onClick={() => {
-          setSelectedActions((a) => [
-            ...a,
-            {
-              availableActionId: "",
-              availableActionName: "game",
-            },
-          ]);
-        }}
-        type="button"
-      >
-        +
-      </button>
+      <div className="w-full items-center justify-center flex">
+        <button
+          className="text-2xl rounded-2xl bg-orange-600 px-2  font-semibold"
+          onClick={() => {
+            setSelectedActions((a) => [
+              ...a,
+              {
+                index: a.length + 1,
+                availableActionId: "",
+                availableActionName: "game",
+              },
+            ]);
+          }}
+          type="button"
+        >
+          +
+        </button>
+      </div>
+      {selectedModelIndex && (
+        <Modal
+          availableItems={
+            selectedModelIndex === 1 ? availableTriggerIds : availableTriggerIds
+          }
+          index={selectedModelIndex}
+          onSelect={(props: null | { name: string; id: string }) => {
+            if (props === null) {
+              setSelectedModelIndex(null);
+              return;
+            }
+
+            if (selectedModelIndex === 1) {
+              setSelectedTrigger({
+                name: props.name,
+                id: props.id,
+              });
+            } else {
+              setSelectedActions((a) => {
+                let newactions = [...a];
+                newactions[selectedModelIndex - 2] = {
+                  index: selectedModelIndex - 2,
+                  availableActionId: props.id,
+                  availableActionName: props.name,
+                };
+                return newactions;
+              });
+            }
+          }}
+        />
+      )}
+    </div>
+  );
+}
+function Modal({
+  availableItems,
+  index,
+  onSelect,
+}: {
+  availableItems: TriggerState | ActionState | undefined; // Adjusted type
+  index: number;
+  onSelect: (props: null | { name: string; id: string }) => void;
+}) {
+  return (
+    <div
+      id="default-modal"
+      aria-hidden="true"
+      className=" overflow-y-auto text-black overflow-x-hidden flex bg-slate-700 bg-opacity-30 backdrop-blur-sm fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+    >
+      <div className="relative p-4 w-full max-w-2xl max-h-full">
+        <div className="relative bg-white rounded-lg shadow ">
+          <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t ">
+            <h3 className="text-xl font-semibold  ">
+              Select a {index === 1 ? "trigger" : "action"}
+            </h3>
+            <button
+              onClick={() => {
+                onSelect(null);
+              }}
+              type="button"
+              className="text-gray-400 bg-transparent hover:bg-gray-200  rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center  dark:hover:text-white"
+              data-modal-hide="default-modal"
+            >
+              <svg
+                className="w-3 h-3"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 14 14"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+                />
+              </svg>
+              <span className="sr-only">Close modal</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

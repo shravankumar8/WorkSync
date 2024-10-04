@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 import bcrypt from "bcrypt"; // For password hashing
 dotenv.config();
 const router = Router();
-export const prismaClient = new PrismaClient();
+ const prismaClient = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || "provenworks";
 
 router.post("/signin", async (req, res) => {
