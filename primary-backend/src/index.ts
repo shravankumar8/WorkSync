@@ -10,7 +10,7 @@ dotenv.config();
 const PORT=process.env.PORT || 3001
 const app = express();
 const corsOptions = {
-  origin: "http://localhost:3000", // or the specific frontend URL
+  origin:  process.env.FRONTEND_URL || "http://localhost:3000", // or the specific frontend URL
   credentials: true, // if you are dealing with cookies or sessions
   optionsSuccessStatus: 200, // legacy browser support
 };

@@ -2,7 +2,8 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
+const PRIMARYBACKENDURL =
+  process.env.PRIMARYBACKENDURL || "http://localhost:3001";
 export default function Signin() {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -10,18 +11,17 @@ export default function Signin() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-   
   });
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const body = {
       email: formData.email,
-     
+
       password: formData.password,
     };
     try {
       // Send a POST request to your backend
-      const response = await fetch("http://localhost:3001/api/v1/user/signin", {
+      const response = await fetch(`${PRIMARYBACKENDURL}/api/v1/user/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -36,10 +36,10 @@ export default function Signin() {
         // Success - display success message
         setSuccess("Signup successful!");
         alert("Signup successful!");
-       localStorage.setItem("token", result.user.token);
+        localStorage.setItem("token", result.user.token);
 
         setError(""); // Clear any previous error messages
-        router.push("/dashboard")
+        router.push("/dashboard");
       } else {
         if (result.error) {
           const messages = result.error.issues.map(
@@ -54,7 +54,7 @@ export default function Signin() {
         setError(result.message || "Signup failed. Please try again.");
       }
     } catch (err) {
-      alert("An error occurred. Please try again.");
+      alert("An error occurred. Please try again.unable to fetch ");
       // Network or other error
       setError("An error occurred. Please try again.");
     }
@@ -103,7 +103,6 @@ export default function Signin() {
               />
             </div>
             <div className="flex gap-3">
-              
               <div className="flex gap-2 min-w-3  flex-col">
                 <label htmlFor="">password (required)</label>
                 <input

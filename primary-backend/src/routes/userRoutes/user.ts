@@ -8,7 +8,7 @@ import bcrypt from "bcrypt"; // For password hashing
 dotenv.config();
 const router = Router();
  const prismaClient = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || "provenworks";
+const JWT_SECRET = process.env.JWT_SECRET || "WorkSyncToken";
 
 router.post("/signin", async (req, res) => {
   console.log(req.body)
@@ -46,7 +46,7 @@ res.cookie("token", token, {
   httpOnly: true, // Makes sure the cookie is not accessible via JavaScript
   secure: process.env.NODE_ENV === "production", // Ensure secure in production (HTTPS)
   sameSite: "strict",
-  maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+ // 1 day in milliseconds
 });
 
     res.status(200).json({

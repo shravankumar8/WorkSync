@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
+const PRIMARYBACKENDURL = process.env.PRIMARYBACKENDURL || "http://localhost:3001"
 export default function Signup() {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -21,7 +21,7 @@ export default function Signup() {
     };
     try {
       // Send a POST request to your backend
-      const response = await fetch("http://localhost:3001/api/v1/user/signup", {
+      const response = await fetch(`${PRIMARYBACKENDURL}/api/v1/user/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,7 +34,7 @@ export default function Signup() {
       console.log(result.user.token);
 
       if (response.ok) {
-         localStorage.setItem("token", JSON.stringify(result.user.token));
+        localStorage.setItem("token", JSON.stringify(result.user.token));
         // Success - display success message
         setSuccess("Signup successful!");
         alert("Signup successful!");

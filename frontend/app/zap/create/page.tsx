@@ -1,9 +1,11 @@
 "use client";
-import { BACKEND_URL } from "@/app/config";
+
 import { ZapCell } from "@/components/zapcell";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+const PRIMARYBACKENDURL =
+  process.env.PRIMARYBACKENDURL || "http://localhost:3001";
 
 function useAvailableActionsAndTriggers() {
   const [availableActionIds, setAvailableActionIds] = useState<
@@ -25,18 +27,17 @@ function useAvailableActionsAndTriggers() {
   useEffect(() => {
     // fetching triggers
     axios
-      .get(`${BACKEND_URL}/api/v1/trigger/available`)
+      .get(`${PRIMARYBACKENDURL}/api/v1/trigger/available`)
       .then((res) => setAvailableTriggerIds(res.data.availableTriggers));
     axios
-      .get(`${BACKEND_URL}/api/v1/action/available`)
+      .get(`${PRIMARYBACKENDURL}/api/v1/action/available`)
       .then((res) => setAvailableActionIds(res.data.availableAction));
   }, []);
 
   return { availableActionIds, availableTriggerIds };
 }
 
-export default  function MyComponent() {
-
+export default function MyComponent() {
   const router = useRouter();
   const { availableActionIds, availableTriggerIds } =
     useAvailableActionsAndTriggers();
@@ -54,27 +55,29 @@ export default  function MyComponent() {
         <button
           onClick={() => {
             if (!selectedTrigger?.id) {
-              alert("kuch toh select kar ");
+              alert("No Option is Selected ");
               return;
             }
-           const response=axios.post(`${BACKEND_URL}/api/v1/zap`, {
-              availableTriggerId: selectedTrigger.id,
-              triggerMetadata: "email lauda",
-              actions: selectedActions.map((action) => ({
-                availableActionId: action.availableActionId,
-                actionMetadata: {},
-              })),
-            },{
-              headers: {
-                authorization: `${localStorage.getItem("token")}`,
+            const response = axios.post(
+              `${PRIMARYBACKENDURL}/api/v1/zap`,
+              {
+                availableTriggerId: selectedTrigger.id,
+                triggerMetadata: "email ",
+                actions: selectedActions.map((action) => ({
+                  availableActionId: action.availableActionId,
+                  actionMetadata: {},
+                })),
               },
+              {
+                headers: {
+                  authorization: `${localStorage.getItem("token")}`,
+                },
+              }
+            );
+            const resp = response.then((res) => {
+              alert(res.data);
+              return res.data;
             });
-            const resp = response.then(res=>{
-              alert(res.data)
-              return res.data
-            })
-
-
           }}
           className=" bg-blue-700 px-4 rounded-lg text-lg text-white font-bold py-2  "
         >
@@ -140,10 +143,10 @@ export default  function MyComponent() {
                 name: props.name,
               });
             } else {
-              setSelectedActions(a => {
+              setSelectedActions((a) => {
                 let newactions = [...a];
                 newactions[selectedModelIndex - 2] = {
-                  index: selectedModelIndex ,
+                  index: selectedModelIndex,
                   availableActionId: props.id,
                   availableActionName: props.name,
                 };
