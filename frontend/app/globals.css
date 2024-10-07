@@ -2,3 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    box-sizing: border-box;
+  }
+  
+  .cool-link {
+    display: inline-block;
+    color: #000; /* Default text color */
+    text-decoration: none;
+    transition: color 0.3s ease; /* Smooth transition for text color */
+}
+
+.cool-link::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 2px;
+    background: #F97316;
+    transition: width 0.3s ease; /* Smooth transition for underline width */
+}
+
+.cool-link:hover {
+    color: #F97316; /* Change text color on hover */
+    transition: color 0.3s ease; /* Smooth transition for text color */
+}
+
+.cool-link:hover::after {
+    width: 100%; /* Expand underline on hover */
+}
