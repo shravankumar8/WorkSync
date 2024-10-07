@@ -2,6 +2,7 @@
 import { BACKEND_URL } from "@/app/config";
 import { ZapCell } from "@/components/zapcell";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 function useAvailableActionsAndTriggers() {
@@ -34,7 +35,9 @@ function useAvailableActionsAndTriggers() {
   return { availableActionIds, availableTriggerIds };
 }
 
-export default function MyComponent() {
+export default  function MyComponent() {
+
+  const router = useRouter();
   const { availableActionIds, availableTriggerIds } =
     useAvailableActionsAndTriggers();
   const [selectedModelIndex, setSelectedModelIndex] = useState<null | number>();
@@ -46,7 +49,38 @@ export default function MyComponent() {
     { index: number; availableActionId: string; availableActionName: string }[]
   >([]);
   return (
-    <div className="w-full  flex flex-col mx-auto  justify-center  h-screen  bg-slate-200">
+    <div className="w-full  flex flex-col relative mx-auto  justify-center  h-screen  bg-slate-200">
+      <div className="absolute top-3 right-3">
+        <button
+          onClick={() => {
+            if (!selectedTrigger?.id) {
+              alert("kuch toh select kar ");
+              return;
+            }
+           const response=axios.post(`${BACKEND_URL}/api/v1/zap`, {
+              availableTriggerId: selectedTrigger.id,
+              triggerMetadata: "email lauda",
+              actions: selectedActions.map((action) => ({
+                availableActionId: action.availableActionId,
+                actionMetadata: {},
+              })),
+            },{
+              headers: {
+                authorization: `${localStorage.getItem("token")}`,
+              },
+            });
+            const resp = response.then(res=>{
+              alert(res.data)
+              return res.data
+            })
+
+
+          }}
+          className=" bg-blue-700 px-4 rounded-lg text-lg text-white font-bold py-2  "
+        >
+          Create zap
+        </button>
+      </div>
       <div className="justify-center mb-3 flex">
         <ZapCell
           onClick={() => {
@@ -62,10 +96,10 @@ export default function MyComponent() {
             <ZapCell
               key={index}
               onClick={() => {
-                setSelectedModelIndex(x.index + 1);
+                setSelectedModelIndex(x.index);
               }}
-              name={x ? x.availableActionName : "action"}
-              index={x.index + 1}
+              name={x.availableActionName ? x.availableActionName : "action"}
+              index={x.index}
             />
           );
         })}
@@ -77,9 +111,9 @@ export default function MyComponent() {
             setSelectedActions((a) => [
               ...a,
               {
-                index: a.length + 1,
+                index: a.length + 2,
                 availableActionId: "",
-                availableActionName: "",
+                availableActionName: "click to select ",
               },
             ]);
           }}
@@ -101,22 +135,22 @@ export default function MyComponent() {
             }
 
             if (selectedModelIndex === 1) {
-              
               setSelectedTrigger({
-                name: props.name,
                 id: props.id,
+                name: props.name,
               });
             } else {
-              setSelectedActions((a) => {
+              setSelectedActions(a => {
                 let newactions = [...a];
                 newactions[selectedModelIndex - 2] = {
-                  index: selectedModelIndex - 2,
+                  index: selectedModelIndex ,
                   availableActionId: props.id,
                   availableActionName: props.name,
                 };
                 return newactions;
               });
             }
+            setSelectedModelIndex(null);
           }}
         />
       )}
@@ -177,12 +211,15 @@ function Modal({
           <div className="p-4 md:p-5 space-y-4">
             {availableItems.map((item) => {
               return (
-                <div onClick={()=>{
-                  onSelect({
-                    id: item.id,
-                    name: item.name,
-                  })
-                }} className="flex hover:bg-slate-100 align-middle border rounded-lg cursor-pointer  items-center  ">
+                <div
+                  onClick={() => {
+                    onSelect({
+                      id: item.id,
+                      name: item.name,
+                    });
+                  }}
+                  className="flex hover:bg-slate-100 align-middle border rounded-lg cursor-pointer  items-center  "
+                >
                   <div className="m-2 " key={item.id}>
                     {" "}
                     {/* Always include a key prop when rendering lists */}

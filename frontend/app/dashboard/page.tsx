@@ -6,6 +6,7 @@ import { loadBindings } from "next/dist/build/swc";
 import { useRouter } from "next/navigation";
 interface Zap {
   id: string;
+  createdAt:string;
   triggerId: string;
   userId: number;
   actions: {
@@ -82,15 +83,18 @@ function ZapTable({ zaps }: { zaps: Zap[] }) {
               <th scope="col" className="px-6 py-3">
                 Open
               </th>
-              <th scope="col" className="px-6 py-3">Created at</th>
+              <th scope="col" className="px-6 py-3">
+                Created at
+              </th>
               <th scope="col" className="px-6 py-3">
                 Webhook URL
               </th>
               <th scope="col" className="px-6 py-3">
-            zap action
+                zap action
               </th>
+              
               <th scope="col" className="px-6 py-3">
-            trigger id
+                trigger id
               </th>
             </tr>
           </thead>
@@ -98,10 +102,12 @@ function ZapTable({ zaps }: { zaps: Zap[] }) {
             {zaps.map((zap) => (
               <tr key={zap.id}>
                 {/* Display the zap's trigger information */}
+
                 <td className="px-6 py-4 whitespace-nowrap">{zap.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 items-center whitespace-nowrap text-sm text-gray-500">
                   <div className="flex-1">
-                    <button className="bg-blue-700 px-4 py-2 rounded-lg text-white"
+                    <button
+                      className="bg-blue-700 px-4 py-2 rounded-lg text-white"
                       onClick={() => {
                         router.push("/zap/" + zap.id);
                       }}
@@ -110,21 +116,42 @@ function ZapTable({ zaps }: { zaps: Zap[] }) {
                     </button>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">Nov 1 2024</td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex-1">{`${HOOKS_URL}/hooks/catch/1/${zap.id}`}</div>
+                  {<DateFormatter date={zap.createdAt} />}
+                </td>
+                <td className="px-6 py-4 items-center whitespace-nowrap">
+                  <div className="flex-1">
+                    <button
+                      className="bg-blue-700 px-4 py-2 rounded-lg text-white"
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `${HOOKS_URL}/hooks/catch/1/${zap.id}`
+                        );
+                      }}
+                    >
+                      Copy Webhook
+                    </button>
+                  </div>
                 </td>
 
                 {/* Display the zap's actions */}
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 items-center flex gap-2 whitespace-nowrap text-sm text-gray-500">
                   {zap.actions.map((action) => (
-                    <div key={action.id}>
-                      Action ID: {action.actionId} <br />
-                      Type: {action.type.name}
+                    <div className="" key={action.id}>
+                      <br />
+                      {action.type.name}→
                     </div>
                   ))}
                 </td>
-
+                    {/* Display trigger type details */}
+                <td className="px-6 py-4 items-center flex gap-2  whitespace-nowrap text-sm text-gray-500">
+                  <div className="flex  flex-wrap-reverse min-w-56">
+                    <img width={30} src={zap.trigger.type.image} alt="" /> ➜
+                    {zap.actions.map((action) => (
+                      <img width={30} src={action.type.image} alt="" />
+                    ))}
+                  </div>
+                </td>
                 {/* Display trigger type details */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {zap.trigger.type.name || "N/A"}
@@ -137,6 +164,17 @@ function ZapTable({ zaps }: { zaps: Zap[] }) {
     </div>
   );
 }
+
+function DateFormatter({ date }: { date: string }) {
+  const formattedDate = new Date(date).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  return <span>{formattedDate}</span>;
+}
+
 
 export default Dashboard;
 // <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">

@@ -3,7 +3,7 @@ import { authMiddleware } from "../middlewares/userAuth";
 import { ZapCreateSchema } from "../../types/types";
 
 import { PrismaClient } from "@prisma/client";
-const prismaclient= new PrismaClient();
+const prismaclient = new PrismaClient();
 const router = Router();
 
 router.post("/", authMiddleware, async (req, res) => {
@@ -67,24 +67,29 @@ router.get("/", authMiddleware, async (req, res) => {
       where: {
         userId: id,
       },
-      include: {
-        actions: {
-          include: {
-            type: true,
-          },
-        },
+      select: {
+        id: true,
+        createdAt: true, // Explicitly select the createdAt field
         trigger: {
           include: {
             type: true,
           },
         },
+        actions: {
+          include: {
+            type: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc", // Sort by createdAt in descending order (latest first)
       },
     });
 
     return res.json({ zaps });
   } catch (error) {
-    console.error(error); // Log the error for debugging
-    res.status(500).json({ message: "Failed to retrieve zaps", error });
+    console.log(error);
+    return res.status(500).json({ error: "Something went wrong" });
   }
 });
 
@@ -92,7 +97,7 @@ router.get("/:zapId", authMiddleware, async (req, res) => {
   // @ts-ignore
   const id = req.id;
   const zapId = req.params.zapId;
-  console.log(id,zapId)
+  console.log(id, zapId);
 
   try {
     const zap = await prismaclient.zap.findFirst({
